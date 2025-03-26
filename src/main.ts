@@ -31,7 +31,7 @@ async function bootstrap() {
     }
   });
   app.enableCors({
-    origin: 'http://localhost:3002', // Allow requests from React app
+    origin: '*', // Allow requests from React app
     credentials: true,
   });
   await app.listen(3000);
