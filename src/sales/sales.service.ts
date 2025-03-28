@@ -92,6 +92,7 @@ export class SalesService {
     const baseQueryBuilder = this.saleRepository
       .createQueryBuilder('sale');
 
+      console.log('Search Params:', params)
     // Apply all filters to a function that returns the modified query builder
     const applyFilters = (qb: SelectQueryBuilder<Sale>) => {
       if (params.agentId) {
@@ -166,20 +167,27 @@ export class SalesService {
       dataQuery.skip(skip).take(params.pageSize);
     }
     
+    console.log('Filtered:', filteredQuery.clone())
     // Create total amount query from the filtered base query
     const totalAmountQuery = filteredQuery.clone()
-      .select('SUM(sale.salesAmount)', 'total').where('sale.productId <=4 ');
+    .andWhere('sale.productId <=4 ')
+    .select('SUM(sale.salesAmount)', 'total');
     
     const totalDisabilityQuery = filteredQuery.clone()
-      .select('SUM(sale.salesAmount)', 'total').where('sale.productId = 5 ');
+    .andWhere('sale.productId = 5 ')
+    .select('SUM(sale.salesAmount)', 'total');
+
     const totalInvesmentQuery = filteredQuery.clone()
-      .select('SUM(sale.salesAmount)', 'total').where('sale.productId = 6 ');
+    .andWhere('sale.productId = 6 ')
+    .select('SUM(sale.salesAmount)', 'total');
 
     const totalTravelQuery = filteredQuery.clone()
-      .select('SUM(sale.salesAmount)', 'total').where('sale.productId = 7 ');
+    .andWhere('sale.productId = 7 ')
+    .select('SUM(sale.salesAmount)', 'total');
     
       const totalGroupDentalQuery = filteredQuery.clone()
-      .select('SUM(sale.salesAmount)', 'total').where('sale.productId in (8,9) ');
+      .andWhere('sale.productId in (8,9) ')
+      .select('SUM(sale.salesAmount)', 'total');
       
     // Execute queries
     const [data, total] = await dataQuery.getManyAndCount();

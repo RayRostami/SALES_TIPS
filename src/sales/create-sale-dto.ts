@@ -28,7 +28,8 @@ export class CreateSaleDto {
 
   @IsNotEmpty()
   @IsNumber()
-  payStatusId: number;
+  @IsOptional()
+  payStatusId?: number;
 
   @IsNotEmpty()
   @IsString()
@@ -39,6 +40,7 @@ export class CreateSaleDto {
   policyNum: string;
   
   @IsString()
+  @IsOptional()
   note?: string;
 }
 
