@@ -12,7 +12,8 @@ export class CreateAgentDto {
   email: string;
 
   @IsString()
-  password: string;
+  @IsOptional()
+  password?: string;
 
   @IsString()
   fanCode: string;

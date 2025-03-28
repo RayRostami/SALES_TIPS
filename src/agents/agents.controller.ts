@@ -4,28 +4,30 @@ import { AuthGuard } from 'src/auth/auth.guard';
 
 
 @Controller('agents')
-@UseGuards(AuthGuard)
+
 export class AgentsController {
   constructor(private agentsService: AgentsService) {}
-
+  
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() agent: any) {
-   
+  create(@Body() agent: any) {    
     return this.agentsService.create(agent);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.agentsService.findAll();
   }
 
   
-
+  @UseGuards(AuthGuard)
   @Put(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() agent: any) {
     return this.agentsService.update(id, agent);
   }
-
+  
+  @UseGuards(AuthGuard)
   @Get('list')
   async getAgents(
     @Query('page', new ParseIntPipe()) page = 1,
@@ -44,15 +46,17 @@ export class AgentsController {
       search
     });
   }
-
+  @UseGuards(AuthGuard)
   @Get(':id')
   findById(@Param('id', new ParseIntPipe()) id: number) {
     return this.agentsService.findById(id);
   }
+
   @Post('activate')
   activate(@Body('token') token: string,@Body('newPassword') newPassword: string) {
     return this.agentsService.activate(token, newPassword);
   }
+  @UseGuards(AuthGuard)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseIntPipe()) id: number): Promise<void> {   

@@ -27,15 +27,18 @@ export class AgentsService {
       if (existingAgent) {
         throw new ConflictException('Email address is already in use');
       }
+      createAgentDto.isActive = false;
+      createAgentDto.password = 'temp_pass_2025!@';
 
       // Generate temporary password
-      var tempPassword = createAgentDto.password.trim();
+      var tempPassword = createAgentDto.password?.trim();
       
       // Generate activation token
       const activationToken = randomUUID().toString();
       const activationExpires = new Date();
       activationExpires.setHours(activationExpires.getHours() + 24); // 24 hours from now
       
+
       // Hash the temporary password
       // Create new agent instance with the additional fields
       const agent = this.agentRepository.create({
@@ -44,10 +47,10 @@ export class AgentsService {
         activationExpires,
         passwordResetRequired: true,
       });
-      
+     
       // Save the agent to database
       const savedAgent = await this.agentRepository.save(agent);
-      if(!savedAgent.isActive) {
+      if(1 === 1) {
         await this.sendActivationEmail(
           savedAgent.email,
           savedAgent.firstName,
@@ -236,6 +239,7 @@ export class AgentsService {
     const agent = await this.agentRepository.findOne({ 
       where: { activationToken: token  } 
     });  
+    console.log('agent:', agent)
     if (!agent) {
       throw new NotFoundException(`Account not found.`);
     }
