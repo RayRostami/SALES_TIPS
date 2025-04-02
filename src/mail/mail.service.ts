@@ -21,7 +21,9 @@ export class MailService {
       },
       tls: {
         rejectUnauthorized: false, // optional, avoid cert issues
-      },
+      },      
+      logger: true,
+      debug: true,
     });
   }
   async sendTesting(to:any, from:any, subject:any, text:any){

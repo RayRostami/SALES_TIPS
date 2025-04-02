@@ -11,7 +11,7 @@ export class MailController {
   ) {
     try {
       await this.mailService.sendTesting(
-        'rostami_r@yahoo.com',
+        'rostami.r76@gmail.com',
         'tipsadvisors@tipservices.ca',
                'Test Email',
          'This is a test email from the application.',
