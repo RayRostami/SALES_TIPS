@@ -33,12 +33,12 @@ import { AuthGuard } from './auth/auth.guard';
       port: 5432,
       username: 'postgres',
       password: 'Tips2025@!',
-      database: 'TipsSalesDB',
+      database: 'sales_db',
       entities: [Agent, Sale, Product, Company,PayStatus],  
       synchronize: false,
       ssl: false
     }),
-    
+
     AuthModule,
     AgentsModule,
     SalesModule,
