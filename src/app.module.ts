@@ -32,7 +32,7 @@ import { AuthGuard } from './auth/auth.guard';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'Pass12345!',
+      password: 'Tips2025@!',
       database: 'sales_db',
       entities: [Agent, Sale, Product, Company,PayStatus],  
       synchronize: false,
