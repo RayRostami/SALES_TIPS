@@ -14,18 +14,27 @@ export class MailService {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('EMAIL_HOST'),
       port: this.configService.get<number>('EMAIL_PORT'),
-      secure:false, // this.configService.get<boolean>('EMAIL_SECURE'),
+      secure:true, // this.configService.get<boolean>('EMAIL_SECURE'),
       auth: {
         user: this.configService.get<string>('EMAIL_USER'),
         pass: this.configService.get<string>('EMAIL_PASSWORD'),
       },
-      tls: {
-        minVersion: 'TLSv1.2',
-        rejectUnauthorized: true
-      }
+      // tls: {
+      //   minVersion: 'TLSv1.2',
+      //   rejectUnauthorized: true
+      // }
     });
   }
-  
+  async sendTesting(to:any, from:any, subject:any, text:any){
+    const res = await this.transporter.sendMail({
+      from,
+      to,
+      subject,
+      text,
+    });
+    console.log('Email sent:', res.response)
+
+  }
   async sendMail({
     to,
     subject,
@@ -51,12 +60,13 @@ export class MailService {
       const html = compiledTemplate(context);
       
       // Send the email
-      await this.transporter.sendMail({
+      const res = await this.transporter.sendMail({
         from: this.configService.get<string>('EMAIL_FROM'),
         to,
         subject,
         html,
       });
+      console.log('Email sent:', res.response)
     } catch (error) {
       console.error('Error sending email:', error);
       throw error;

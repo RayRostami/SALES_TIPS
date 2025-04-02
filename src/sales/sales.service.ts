@@ -16,7 +16,7 @@ export class SalesService {
   ) { }
 
   async create(createSaleDto: CreateSaleDto): Promise<Sale> {
-    console.log(createSaleDto)
+   
     const values = [
       new Date(createSaleDto.salesDate),
       createSaleDto.salesAmount,
@@ -92,7 +92,7 @@ export class SalesService {
     const baseQueryBuilder = this.saleRepository
       .createQueryBuilder('sale');
 
-      console.log('Search Params:', params)
+     
     // Apply all filters to a function that returns the modified query builder
     const applyFilters = (qb: SelectQueryBuilder<Sale>) => {
       if (params.agentId) {
@@ -167,7 +167,7 @@ export class SalesService {
       dataQuery.skip(skip).take(params.pageSize);
     }
     
-    console.log('Filtered:', filteredQuery.clone())
+
     // Create total amount query from the filtered base query
     const totalAmountQuery = filteredQuery.clone()
     .andWhere('sale.productId <=4 ')

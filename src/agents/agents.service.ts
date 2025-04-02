@@ -246,8 +246,7 @@ export class AgentsService {
   async activate(token:string, newPassword:string): Promise<Agent> {
     const agent = await this.agentRepository.findOne({ 
       where: { activationToken: token  } 
-    });  
-    console.log('agent:', agent)
+    }); 
     if (!agent) {
       throw new NotFoundException(`Account not found.`);
     }
