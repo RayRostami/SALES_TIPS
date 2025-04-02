@@ -34,10 +34,11 @@ import { AuthGuard } from './auth/auth.guard';
       username: 'postgres',
       password: 'Tips2025@!',
       database: 'TipsSalesDB',
-      entities: [Agent, Sale, Product, Company,PayStatus],    
+      entities: [Agent, Sale, Product, Company,PayStatus],  
       synchronize: false,
       ssl: false
     }),
+    
     AuthModule,
     AgentsModule,
     SalesModule,
