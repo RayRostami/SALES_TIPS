@@ -27,6 +27,14 @@ export class AgentsService {
       if (existingAgent) {
         throw new ConflictException('Email address is already in use');
       }
+
+      const existingFanAgent = await this.agentRepository.findOne({
+        where: { fanCode: createAgentDto.fanCode }
+      });
+
+      if (existingFanAgent) {
+        throw new ConflictException('FAN code is already in use');
+      }
       createAgentDto.isActive = false;
       createAgentDto.password = 'temp_pass_2025!@';
 
