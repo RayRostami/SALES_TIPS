@@ -34,19 +34,18 @@
       display: inline-block;
       background-color: #0056b3;
       color: white !important;
-      /* Added !important */
       text-decoration: none;
       padding: 10px 20px;
       border-radius: 4px;
       margin: 20px 0;
     }
 
-    /* Handle different link states */
+    /* Update the link state styles to ensure white text */
     .button:link,
     .button:visited,
     .button:hover,
     .button:active {
-      color: white;
+      color: white !important;
       text-decoration: none;
     }
 
