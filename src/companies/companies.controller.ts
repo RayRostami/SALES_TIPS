@@ -8,7 +8,7 @@ export class CompaniesController {
   constructor(private companiesService: CompaniesService) {}
 
   @Post()
-  create(@Body() company: any) {   
+  create(@Body() company: any) {  
     return this.companiesService.create(company);
   }
   @Put(':id')

@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
@@ -7,4 +8,16 @@ export class Company {
 
   @Column()
   company: string;
+
+  @Column({name:'wholesaler'})
+  @Optional()
+  wholeSaler?: string;
+
+  @Column({name:'softwarelink'})
+  @Optional()
+  softwareLink?: string;
+
+  @Column({name:'softwarename'})
+  @Optional()
+  softwareName?: string;
 }

@@ -42,6 +42,10 @@ export class CreateSaleDto {
   @IsString()
   @IsOptional()
   note?: string;
+
+  @IsOptional()
+  @IsNumber()
+  commission?: number;
 }
 
 

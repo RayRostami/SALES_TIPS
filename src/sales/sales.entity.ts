@@ -19,6 +19,9 @@ export class Sale {
   @Column({name:'coverage'})
   coverage?: number;
 
+  @Column({name:'commission'})
+  commission?: number;
+
   @Column({name:'policy_num'})
   policyNum: string;
 

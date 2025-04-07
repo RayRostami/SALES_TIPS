@@ -172,6 +172,9 @@ export class SalesService {
     const totalAmountQuery = filteredQuery.clone()
     .andWhere('sale.productId <=4 ')
     .select('SUM(sale.salesAmount)', 'total');
+
+    const totalCommissionQuery = filteredQuery.clone()
+    .select('SUM(sale.commission)', 'total');
     
     const totalDisabilityQuery = filteredQuery.clone()
     .andWhere('sale.productId = 5 ')
@@ -196,6 +199,7 @@ export class SalesService {
     const totalTravel = await totalTravelQuery.getRawOne();
     const totalDisability = await totalDisabilityQuery.getRawOne();
     const totalGroupDental = await totalGroupDentalQuery.getRawOne();
+    const totalCommission = await totalCommissionQuery.getRawOne();
     return {
       data,
       total,
@@ -203,7 +207,9 @@ export class SalesService {
       totalDisability: Number(totalDisability?.total || 0),
       totalInvesment: Number(totalInvesment?.total || 0),
       totalTravel: Number(totalTravel?.total || 0),  
-      totalGroupDental: Number(totalGroupDental?.total || 0),   
+      totalGroupDental: Number(totalGroupDental?.total || 0),  
+      totalCommission: Number(totalCommission?.total || 0),
+      totalRecords: data.length, 
       page: params.page || 1,
       pageSize: params.pageSize || data.length,
     };
