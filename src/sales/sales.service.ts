@@ -177,6 +177,9 @@ export class SalesService {
 
     const totalCommissionQuery = filteredQuery.clone()
     .select('SUM(sale.commission)', 'total');
+
+    const totalFYCQuery = filteredQuery.clone()
+    .select('SUM(sale.fyc)', 'total');
     
     const totalDisabilityQuery = filteredQuery.clone()
     .andWhere('sale.productId = 5 ')
@@ -202,6 +205,7 @@ export class SalesService {
     const totalDisability = await totalDisabilityQuery.getRawOne();
     const totalGroupDental = await totalGroupDentalQuery.getRawOne();
     const totalCommission = await totalCommissionQuery.getRawOne();
+    const totalFYC = await totalFYCQuery.getRawOne();
     return {
       data,
       total,
@@ -211,6 +215,7 @@ export class SalesService {
       totalTravel: Number(totalTravel?.total || 0),  
       totalGroupDental: Number(totalGroupDental?.total || 0),  
       totalCommission: Number(totalCommission?.total || 0),
+      totalFYC: Number(totalFYC?.total || 0),
       totalRecords: data.length, 
       page: params.page || 1,
       pageSize: params.pageSize || data.length,
