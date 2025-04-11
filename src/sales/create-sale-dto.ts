@@ -46,6 +46,10 @@ export class CreateSaleDto {
   @IsOptional()
   @IsNumber()
   commission?: number;
+
+  @IsOptional()
+  @IsNumber()
+  fyc?: number;
 }
 
 

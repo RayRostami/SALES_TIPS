@@ -21,6 +21,9 @@ export class Sale {
 
   @Column({name:'commission'})
   commission?: number;
+ 
+  @Column({name:'fyc'})
+  fyc?: number;
 
   @Column({name:'policy_num'})
   policyNum: string;

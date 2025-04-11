@@ -27,12 +27,14 @@ export class SalesService {
       createSaleDto.clientName,
       createSaleDto.policyNum,
       createSaleDto.note,
-      createSaleDto.coverage
+      createSaleDto.coverage,
+      createSaleDto.commission,
+      createSaleDto.fyc
     ];
     const query = `
       INSERT INTO "sale" 
-      ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage")
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
+      ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage","commission","fyc)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11,$12)
     `;
 
     // Using QueryRunner for direct SQL execution
