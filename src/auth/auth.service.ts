@@ -2,7 +2,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { ILike, MoreThan, Repository } from 'typeorm';
 import { Agent } from '../agents/agent.entity';
 import { MailService } from 'src/mail/mail.service';
 import * as crypto from 'crypto';
@@ -21,7 +21,7 @@ export class AuthService {
     try {  
 
       const user = await this.agentsRepository.findOne({
-        where: { email },
+        where: { email: ILike(`${email}`)},
         select: ['id', 'email', 'password', 'firstName', 'lastName', 'isActive', 'role'] // Include all needed fields
       });      
 
