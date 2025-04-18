@@ -33,7 +33,7 @@ export class SalesService {
     ];
     const query = `
       INSERT INTO "sale" 
-      ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage","commission","fyc)
+      ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage","commission","fyc")
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11,$12)
     `;
 
