@@ -7,6 +7,34 @@ import { CreateSaleDto, UpdateSaleDto, SaleSearchParams } from './create-sale-dt
 
 import { DataSource } from 'typeorm';
 
+interface SortConfig {
+  field: string;
+  order: 'ASC' | 'DESC';
+}
+
+interface SearchParams {
+  page: number;
+  pageSize: number;
+  sortField: string; // Comma-separated fields
+  sortOrder: string; // Comma-separated orders
+  // ... other search parameters
+}
+
+// Parse the sort parameters
+const parseSortParams = (sortField?: string, sortOrder?: string): SortConfig[] => {
+  if (!sortField || !sortOrder) {
+    return [];
+  }
+
+  const fields = sortField?.split(',');
+  const orders = sortOrder?.split(',');
+
+  return fields.map((field, index) => ({
+    field: field.trim(),
+    order: (orders[index]?.trim() || 'DESC') as 'ASC' | 'DESC'
+  }));
+};
+
 
 @Injectable()
 export class SalesService {
@@ -16,7 +44,7 @@ export class SalesService {
   ) { }
 
   async create(createSaleDto: CreateSaleDto): Promise<Sale> {
-   
+
     const values = [
       new Date(createSaleDto.salesDate),
       createSaleDto.salesAmount,
@@ -31,6 +59,7 @@ export class SalesService {
       createSaleDto.commission,
       createSaleDto.fyc
     ];
+
     const query = `
       INSERT INTO "sale" 
       ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage","commission","fyc")
@@ -89,12 +118,163 @@ export class SalesService {
       pageSize,
     };
   }
+  buildOrderBy = (sortConfigs: SortConfig[]) => {
+    const orderBy: any = {};
+
+    sortConfigs.forEach(({ field, order }) => {
+      // Handle nested fields (e.g., agent.firstName)
+      if (field.includes('.')) {
+        const [relation, property] = field.split('.');
+        orderBy[relation] = { [property]: order };
+      } else {
+        orderBy[field] = order;
+      }
+    });
+
+    return orderBy;
+  };
+  // async search(params: SaleSearchParams) {
+  //   const sortConfigs = parseSortParams(params.sortField, params.sortOrder);
+  //   const orderBy = this.buildOrderBy(sortConfigs);
+  //   const baseQueryBuilder = this.saleRepository
+  //     .createQueryBuilder('sale');
+
+
+  //   // Apply all filters to a function that returns the modified query builder
+  //   const applyFilters = (qb: SelectQueryBuilder<Sale>) => {
+  //     if (params.agentId) {
+  //       qb.andWhere('sale.agentId = :agentId', { agentId: params.agentId });
+  //     }
+  //     if (params.payStatusId) {
+  //       qb.andWhere('sale.pay_status_id = :payStatusId', { payStatusId: params.payStatusId });
+  //     }
+  //     if (params.productId) {
+  //       qb.andWhere('sale.productId = :productId', { productId: params.productId });
+  //     }
+  //     if (params.companyId) {
+  //       qb.andWhere('sale.companyId = :companyId', { companyId: params.companyId });
+  //     }
+  //     if (params.clientName) {
+  //       qb.andWhere("LOWER(sale.client_name) LIKE LOWER(:clientName)", {
+  //         clientName: `%${params.clientName}%`
+  //       });
+  //     }
+  //     if (params.policyNum) {
+  //       qb.andWhere("LOWER(sale.policy_num) LIKE LOWER(:policyNum)", {
+  //         policyNum: `%${params.policyNum}%`
+  //       });
+  //     }
+  //     if (params.fromDate && params.toDate) {
+  //       qb.andWhere('sale.salesDate BETWEEN :fromDate AND :toDate', {
+  //         fromDate: params.fromDate,
+  //         toDate: params.toDate,
+  //       });
+  //     } else if (params.fromDate) {
+  //       qb.andWhere('sale.salesDate >= :fromDate', { fromDate: params.fromDate });
+  //     } else if (params.toDate) {
+  //       qb.andWhere('sale.salesDate <= :toDate', { toDate: params.toDate });
+  //     }
+  //     return qb;
+  //   };
+
+  //   // Apply filters to base query
+  //   const filteredQuery = applyFilters(baseQueryBuilder);
+
+  //   // Create data query with relations and ordering
+  //   const dataQuery = filteredQuery.clone()
+  //     .leftJoinAndSelect('sale.agent', 'agent')
+  //     .leftJoinAndSelect('sale.product', 'product')
+  //     .leftJoinAndSelect('sale.company', 'company')
+  //     .leftJoinAndSelect('sale.payStatus', 'payStatus');
+
+  //   // Apply sorting
+  //   if (params.sortField) {
+  //     const order: any = {};
+  //     if (params.sortField.includes('.')) {
+  //       const [relation, field] = params.sortField.split('.');
+  //       order[relation] = { [field]: params.sortOrder || 'ASC' };
+  //     } else {
+  //       order[params.sortField] = params.sortOrder || 'ASC';
+  //     }
+
+  //     for (const [key, value] of Object.entries(order)) {
+  //       if (typeof value === 'object') {
+  //         const obj = value as object;
+  //         const [nestedKey, nestedValue] = Object.entries(obj)[0];
+  //         dataQuery.addOrderBy(`${key}.${nestedKey}`, nestedValue === 'DESC' ? 'DESC' : 'ASC');
+  //       } else {
+  //         dataQuery.addOrderBy(`sale.${key}`, value === 'DESC' ? 'DESC' : 'ASC');
+  //       }
+  //     }
+  //   }
+
+  //   // Only apply pagination if page and pageSize are provided
+  //   if (params.page && params.pageSize) {
+  //     const skip = (params.page - 1) * params.pageSize;
+  //     dataQuery.skip(skip).take(params.pageSize);
+  //   }
+
+
+  //   // Create total amount query from the filtered base query
+  //   const totalAmountQuery = filteredQuery.clone()
+  //   .andWhere('sale.productId <=4 ')
+  //   .select('SUM(sale.salesAmount)', 'total');
+
+  //   const totalCommissionQuery = filteredQuery.clone()
+  //   .select('SUM(sale.commission)', 'total');
+
+  //   const totalFYCQuery = filteredQuery.clone()
+  //   .select('SUM(sale.fyc)', 'total');
+
+  //   const totalDisabilityQuery = filteredQuery.clone()
+  //   .andWhere('sale.productId = 5 ')
+  //   .select('SUM(sale.salesAmount)', 'total');
+
+  //   const totalInvesmentQuery = filteredQuery.clone()
+  //   .andWhere('sale.productId = 6 ')
+  //   .select('SUM(sale.salesAmount)', 'total');
+
+  //   const totalTravelQuery = filteredQuery.clone()
+  //   .andWhere('sale.productId = 7 ')
+  //   .select('SUM(sale.salesAmount)', 'total');
+
+  //     const totalGroupDentalQuery = filteredQuery.clone()
+  //     .andWhere('sale.productId in (8,9) ')
+  //     .select('SUM(sale.salesAmount)', 'total');
+
+  //   // Execute queries
+  //   const [data, total] = await dataQuery.getManyAndCount();
+  //   const totalAmount = await totalAmountQuery.getRawOne();
+  //   const totalInvesment = await totalInvesmentQuery.getRawOne();
+  //   const totalTravel = await totalTravelQuery.getRawOne();
+  //   const totalDisability = await totalDisabilityQuery.getRawOne();
+  //   const totalGroupDental = await totalGroupDentalQuery.getRawOne();
+  //   const totalCommission = await totalCommissionQuery.getRawOne();
+  //   const totalFYC = await totalFYCQuery.getRawOne();
+  //   return {
+  //     data,
+  //     total,
+  //     totalSales: Number(totalAmount?.total || 0),
+  //     totalDisability: Number(totalDisability?.total || 0),
+  //     totalInvesment: Number(totalInvesment?.total || 0),
+  //     totalTravel: Number(totalTravel?.total || 0),  
+  //     totalGroupDental: Number(totalGroupDental?.total || 0),  
+  //     totalCommission: Number(totalCommission?.total || 0),
+  //     totalFYC: Number(totalFYC?.total || 0),
+  //     totalRecords: data.length, 
+  //     page: params.page || 1,
+  //     pageSize: params.pageSize || data.length,
+  //   };
+  // }
 
   async search(params: SaleSearchParams) {
+    console.log('sea:', params)
+    // Parse sort configurations
+    const sortConfigs = parseSortParams(params.sortField, params.sortOrder);
+
     const baseQueryBuilder = this.saleRepository
       .createQueryBuilder('sale');
 
-     
     // Apply all filters to a function that returns the modified query builder
     const applyFilters = (qb: SelectQueryBuilder<Sale>) => {
       if (params.agentId) {
@@ -135,68 +315,63 @@ export class SalesService {
     // Apply filters to base query
     const filteredQuery = applyFilters(baseQueryBuilder);
 
-    // Create data query with relations and ordering
+    // Create data query with relations
     const dataQuery = filteredQuery.clone()
       .leftJoinAndSelect('sale.agent', 'agent')
       .leftJoinAndSelect('sale.product', 'product')
       .leftJoinAndSelect('sale.company', 'company')
       .leftJoinAndSelect('sale.payStatus', 'payStatus');
 
-    // Apply sorting
-    if (params.sortField) {
-      const order: any = {};
-      if (params.sortField.includes('.')) {
-        const [relation, field] = params.sortField.split('.');
-        order[relation] = { [field]: params.sortOrder || 'ASC' };
-      } else {
-        order[params.sortField] = params.sortOrder || 'ASC';
-      }
-
-      for (const [key, value] of Object.entries(order)) {
-        if (typeof value === 'object') {
-          const obj = value as object;
-          const [nestedKey, nestedValue] = Object.entries(obj)[0];
-          dataQuery.addOrderBy(`${key}.${nestedKey}`, nestedValue === 'DESC' ? 'DESC' : 'ASC');
+    // Apply multiple sorting
+    if (sortConfigs.length > 0) {
+      sortConfigs.forEach((sortConfig, index) => {
+        if (sortConfig.field.includes('.')) {
+          // Handle relation sorting (e.g., agent.firstName)
+          const [relation, field] = sortConfig.field.split('.');
+          dataQuery.addOrderBy(`${relation}.${field}`, sortConfig.order);
         } else {
-          dataQuery.addOrderBy(`sale.${key}`, value === 'DESC' ? 'DESC' : 'ASC');
+          // Handle direct field sorting
+          dataQuery.addOrderBy(`sale.${sortConfig.field}`, sortConfig.order);
         }
-      }
+      });
+    } else {
+      // Default sorting
+      dataQuery.orderBy('sale.salesDate', 'DESC');
     }
-    
-    // Only apply pagination if page and pageSize are provided
+
+    // Apply pagination if provided
     if (params.page && params.pageSize) {
       const skip = (params.page - 1) * params.pageSize;
       dataQuery.skip(skip).take(params.pageSize);
     }
-    
 
     // Create total amount query from the filtered base query
     const totalAmountQuery = filteredQuery.clone()
-    .andWhere('sale.productId <=4 ')
-    .select('SUM(sale.salesAmount)', 'total');
+      .andWhere('sale.productId <=4 ')
+      .select('SUM(sale.salesAmount)', 'total');
 
     const totalCommissionQuery = filteredQuery.clone()
-    .select('SUM(sale.commission)', 'total');
+      .select('SUM(sale.commission)', 'total');
 
     const totalFYCQuery = filteredQuery.clone()
-    .select('SUM(sale.fyc)', 'total');
-    
+      .select('SUM(sale.fyc)', 'total');
+
     const totalDisabilityQuery = filteredQuery.clone()
-    .andWhere('sale.productId = 5 ')
-    .select('SUM(sale.salesAmount)', 'total');
+      .andWhere('sale.productId = 5 ')
+      .select('SUM(sale.salesAmount)', 'total');
 
     const totalInvesmentQuery = filteredQuery.clone()
-    .andWhere('sale.productId = 6 ')
-    .select('SUM(sale.salesAmount)', 'total');
+      .andWhere('sale.productId = 6 ')
+      .select('SUM(sale.salesAmount)', 'total');
 
     const totalTravelQuery = filteredQuery.clone()
-    .andWhere('sale.productId = 7 ')
-    .select('SUM(sale.salesAmount)', 'total');
-    
-      const totalGroupDentalQuery = filteredQuery.clone()
+      .andWhere('sale.productId = 7 ')
+      .select('SUM(sale.salesAmount)', 'total');
+
+    const totalGroupDentalQuery = filteredQuery.clone()
       .andWhere('sale.productId in (8,9) ')
       .select('SUM(sale.salesAmount)', 'total');
-      
+
     // Execute queries
     const [data, total] = await dataQuery.getManyAndCount();
     const totalAmount = await totalAmountQuery.getRawOne();
@@ -206,23 +381,22 @@ export class SalesService {
     const totalGroupDental = await totalGroupDentalQuery.getRawOne();
     const totalCommission = await totalCommissionQuery.getRawOne();
     const totalFYC = await totalFYCQuery.getRawOne();
+
     return {
       data,
       total,
       totalSales: Number(totalAmount?.total || 0),
       totalDisability: Number(totalDisability?.total || 0),
       totalInvesment: Number(totalInvesment?.total || 0),
-      totalTravel: Number(totalTravel?.total || 0),  
-      totalGroupDental: Number(totalGroupDental?.total || 0),  
+      totalTravel: Number(totalTravel?.total || 0),
+      totalGroupDental: Number(totalGroupDental?.total || 0),
       totalCommission: Number(totalCommission?.total || 0),
       totalFYC: Number(totalFYC?.total || 0),
-      totalRecords: data.length, 
+      totalRecords: data.length,
       page: params.page || 1,
       pageSize: params.pageSize || data.length,
     };
   }
-
-
   async findOne(id: number): Promise<Sale> {
     const sale = await this.saleRepository.findOne({
       where: { id },

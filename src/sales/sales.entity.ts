@@ -13,16 +13,16 @@ export class Sale {
   @Column()
   salesDate: Date;
 
-  @Column()
+  @Column({name:'salesAmount', type:'numeric', 'precision':10, scale:2})
   salesAmount: number;
 
-  @Column({name:'coverage'})
+  @Column({name:'coverage', type:'numeric', 'precision':10, scale:2})
   coverage?: number;
 
-  @Column({name:'commission'})
+  @Column({name:'commission', type:'numeric', 'precision':15, scale:2})
   commission?: number;
  
-  @Column({name:'fyc'})
+  @Column({name:'fyc', type:'numeric', 'precision':15, scale:2})
   fyc?: number;
 
   @Column({name:'policy_num'})
