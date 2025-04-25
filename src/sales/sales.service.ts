@@ -284,10 +284,16 @@ export class SalesService {
         qb.andWhere('sale.pay_status_id = :payStatusId', { payStatusId: params.payStatusId });
       }
       if (params.productId) {
-        qb.andWhere('sale.productId = :productId', { productId: params.productId });
+        const productIds = params.productId.toString().split(',');
+        qb.andWhere('sale.productId IN (:...productIds)', {
+          productIds: productIds,
+        });
       }
-      if (params.companyId) {
-        qb.andWhere('sale.companyId = :companyId', { companyId: params.companyId });
+      if (params.companyId) {        
+        const companyIds = params.companyId.toString().split(',');
+        qb.andWhere('sale.companyId IN (:...companyIds)', {
+          companyIds: companyIds,
+        });
       }
       if (params.clientName) {
         qb.andWhere("LOWER(sale.client_name) LIKE LOWER(:clientName)", {

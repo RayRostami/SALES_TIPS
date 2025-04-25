@@ -102,12 +102,10 @@ export class SaleSearchParams {
   clientName?: string;
 
   @IsOptional()
-  @IsNumber()
-  productId?: number;
+  @IsString()
+  productId?: string;
 
   @IsOptional()
-  @IsNumber()
-  companyId?: number;
-
-  
+  @IsString()
+  companyId?: string;
 }
