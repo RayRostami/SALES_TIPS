@@ -1,0 +1,98 @@
+<!-- src/mail/templates/contract-request.hbs -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>New Contract Request</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background-color: #0056b3;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+
+    .content {
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+
+    .button {
+      display: inline-block;
+      background-color: #0056b3;
+      color: white !important;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+
+    /* Update the link state styles to ensure white text */
+    .button:link,
+    .button:visited,
+    .button:hover,
+    .button:active {
+      color: white !important;
+      text-decoration: none;
+    }
+
+    .details {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>New Contract Request</h1>
+    </div>
+    <div class="content">
+      <h2>Hello Admin,</h2>
+      <p>A new contract request has been submitted and requires your attention.</p>
+
+      <div class="details">
+        <h3>Request Details:</h3>
+        <p><strong>Agent:</strong> {{agentName}}</p>
+        <p><strong>Company:</strong> {{companyName}}</p>
+        <p><strong>Date Requested:</strong> {{requestDate}}</p>
+      </div>
+
+      <p>Please review this request and follow up with the agent as needed.</p>
+
+      <a href="{{adminDashboardLink}}" class="button">View in Dashboard</a>
+
+      <p>Thank you,<br>TIPS Sales System</p>
+    </div>
+    <div class="footer">
+      <p>This is an automated email. Please do not reply to this message.</p>
+      <p>&copy; {{currentYear}} TIPS. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+
+</html>

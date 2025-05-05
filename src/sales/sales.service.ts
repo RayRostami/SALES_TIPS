@@ -268,7 +268,7 @@ export class SalesService {
   // }
 
   async search(params: SaleSearchParams) {
-    console.log('sea:', params)
+  
     // Parse sort configurations
     const sortConfigs = parseSortParams(params.sortField, params.sortOrder);
 

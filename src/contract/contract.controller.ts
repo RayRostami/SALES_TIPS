@@ -8,28 +8,36 @@ import {
     Param, 
     ParseIntPipe,
     ValidationPipe, 
-    Query,
-    DefaultValuePipe
+    Query,   
+    UseGuards
 } from '@nestjs/common';
 import { ContractService } from './contract.service';
 import { Contract } from './contract.entity';
 import { CreateContractDto, UpdateContractDto } from './contract.dto';
-import { CompanyContractView } from './company-contract-view.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('contracts')
+@UseGuards(AuthGuard)
 export class ContractController {
     constructor(private readonly contractService: ContractService) {}
+    @Get('companycontract')
+    async findCompanyContracts(
+        @Query('companyId', ParseIntPipe) companyId: number,
+        @Query('agentId', ParseIntPipe) agentId: number       
+    ) {        
+        return await this.contractService.findCompanyContract(companyId,agentId);
+    }
 
     @Get()
     async findAll(): Promise<Contract[]> {
         return await this.contractService.findAll();
-    }
-
+    }    
+    
+    
     @Get(':id')
     async findOne(@Param('id', ParseIntPipe) id: number): Promise<Contract> {
         return await this.contractService.findOne(id);
     }
-
     @Post()
     async create(
         @Body(ValidationPipe) createContractDto: CreateContractDto
@@ -50,21 +58,5 @@ export class ContractController {
         return await this.contractService.remove(id);
     }
 
-    @Get('company-contracts/:id')
-    async findCompanyContractById(
-        @Param('id', ParseIntPipe) id: number
-    ): Promise<CompanyContractView> {
-        return await this.contractService.findCompanyContractById(id);
-    }
-
-    @Get('company-contracts/:agentId')
-    async findAllCompanyContracts(
-        @Param('agentId', ParseIntPipe) agentId: number,
-        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-        @Query('search') search?: string
-    ) {
-        return await this.contractService.findAllCompanyContracts(agentId, page, limit, search);
-    }
     
 }

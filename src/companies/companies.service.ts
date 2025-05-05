@@ -18,8 +18,7 @@ export class CompaniesService {
 
       if (existingAgent) {
         throw new ConflictException(`Company: ${company.company} already exists.`);
-      }
-      console.log('Creating company:', company);
+      }      
       const newCompany = this.companiesRepository.create(company);
       const savedCompany = await this.companiesRepository.save(newCompany);
       return savedCompany;

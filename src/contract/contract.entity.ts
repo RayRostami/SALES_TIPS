@@ -1,7 +1,7 @@
 import { Agent } from 'src/agents/agent.entity';
 import { Company } from 'src/companies/company.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { ContractStatus } from './contactStatus.entity';
+import { ContractStatus } from './contractStatus.entity';
 
 @Entity({ schema: 'public', name: 'contract' })
 export class Contract {

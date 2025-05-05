@@ -1,16 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Contract } from './contract.entity';
 import { CreateContractDto, UpdateContractDto } from './contract.dto';
-import { CompanyContractView } from './company-contract-view.entity';
+import { MailService } from 'src/mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ContractService {
     constructor(
         @InjectRepository(Contract)
         private contractRepository: Repository<Contract>,
-        private companyContractViewRepository: Repository<CompanyContractView>
+        private mailService: MailService,
+        private configService: ConfigService
     ) {}
 
     async findAll(): Promise<Contract[]> {
@@ -33,6 +35,17 @@ export class ContractService {
     }
 
     async create(createContractDto: CreateContractDto): Promise<Contract> {
+        // Check if a contract already exists for this agent and company
+        const existingContract = await this.findCompanyContract(
+            createContractDto.companyId,
+            createContractDto.agentId
+        );
+        
+        if (existingContract) {
+            throw new ConflictException(`A contract already exists between agent ID ${createContractDto.agentId} and company ID ${createContractDto.companyId}`);
+        }
+        
+        // Create new contract if no existing one found
         const contract = this.contractRepository.create({
             fundservCode: createContractDto.fundservCode,
             company: { id: createContractDto.companyId },
@@ -40,7 +53,39 @@ export class ContractService {
             status: { id: createContractDto.statusId }
         });
 
-        return await this.contractRepository.save(contract);
+       // Save the contract
+       const savedContract = await this.contractRepository.save(contract);
+        
+       // Load the full contract with relations to get company and agent names
+       const fullContract = await this.contractRepository.findOne({
+           where: { id: savedContract.id },
+           relations: ['company', 'agent', 'status'],
+       });
+       
+       // Send email notification to admin
+       try {
+           const adminEmail = this.configService.get<string>('ADMIN_EMAIL') || 'admin@tipservices.ca';
+           const dashboardUrl = this.configService.get<string>('ADMIN_DASHBOARD_URL') || 'https://tipsadvisors.tipservices.ca/';
+           
+           await this.mailService.sendMail({
+               to: adminEmail,
+               subject: 'New Contract Request',
+               template: 'contract-request',
+               context: {
+                   agentName: `${fullContract?.agent.firstName} ${fullContract?.agent.lastName}`,
+                   companyName: fullContract?.company.company,
+                   requestDate: new Date().toLocaleDateString(),
+                   adminDashboardLink: dashboardUrl,
+                   currentYear: new Date().getFullYear()
+               }
+           });
+           
+           console.log('Contract request notification email sent to admin');
+       } catch (error) {
+           console.error('Failed to send contract request notification email:', error);
+       }
+
+       return savedContract;
     }
 
     async update(id: number, updateContractDto: UpdateContractDto): Promise<Contract> {
@@ -68,40 +113,24 @@ export class ContractService {
         if (result.affected === 0) {
             throw new NotFoundException(`Contract with ID ${id} not found`);
         }
-    }
-    async findAllCompanyContracts(
-        agentId: number,
-        page: number = 1,
-        limit: number = 10,
-        search?: string
-    ): Promise<{ data: CompanyContractView[]; total: number }> {
-        const queryBuilder = this.companyContractViewRepository.createQueryBuilder('cv');
-        
-        // Always filter by agentId
-        queryBuilder.where('cv.agentid = :agentId', { agentId });
-    
-        // Add search condition if provided
-        if (search) {
-            queryBuilder.andWhere('cv.company ILIKE :search', { search: `%${search}%` });
-        }
-        
-        const [data, total] = await queryBuilder
-            .skip((page - 1) * limit)
-            .take(limit)
-            .orderBy('cv.company', 'ASC') // Add ordering if needed
-            .getManyAndCount();
-    
-        return { data, total };
-    }
-    async findCompanyContractById(id: number): Promise<CompanyContractView> {
-        const result = await this.companyContractViewRepository.findOne({
-            where: { id }
-        });
-        
-        if (!result) {
-            throw new NotFoundException(`Company contract with ID ${id} not found`);
-        }
-        
-        return result;
+    }    
+
+    async findCompanyContract(companyId:number, agentId: number): Promise<any> {
+        try {
+            // Use createQueryBuilder instead of findOne
+            const contract = await this.contractRepository.createQueryBuilder('contract')
+              .leftJoinAndSelect('contract.company', 'company')
+              .leftJoinAndSelect('contract.agent', 'agent')
+              .leftJoinAndSelect('contract.status', 'status')
+              .where('company.id = :companyId', { companyId })
+              .andWhere('agent.id = :agentId', { agentId })
+              .getOne();
+            
+            
+            return contract;
+          } catch (error) {
+            console.error('Error in findCompanyContract:', error);
+            throw error;
+          }
     }
 }

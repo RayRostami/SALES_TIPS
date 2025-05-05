@@ -15,10 +15,14 @@ import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './auth/auth.guard';
+import { ContractModule } from './contract/contract.module';
+import { Contract } from './contract/contract.entity';
+import { CompanyContractView } from './contract/company-contract-view.entity';
+import { ContractStatus } from './contract/contractStatus.entity';
 
 
 @Module({
-  imports: [
+  imports: [   
     ConfigModule.forRoot({
       isGlobal: true, // Makes config available throughout the app
       envFilePath: '.env', // Specify your .env file path
@@ -32,10 +36,10 @@ import { AuthGuard } from './auth/auth.guard';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'Tips2025@!',
-     // password: 'Pass12345!',
+      //password: 'Tips2025@!',
+      password: 'Pass12345!',
       database: 'sales_db',
-      entities: [Agent, Sale, Product, Company,PayStatus],  
+      entities: [Agent, Sale, Product, Company,PayStatus,Contract, CompanyContractView, ContractStatus],  
       synchronize: false,
       ssl: false
     }),
@@ -46,7 +50,8 @@ import { AuthGuard } from './auth/auth.guard';
     ProductsModule,
     CompaniesModule,
     PayStatusModule,
-    MailModule
+    MailModule,
+    ContractModule
   ],
   providers:[AuthGuard],
   exports:[AuthGuard,JwtModule]
