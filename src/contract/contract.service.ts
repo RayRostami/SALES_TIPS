@@ -133,4 +133,20 @@ export class ContractService {
             throw error;
           }
     }
+    
+    async findByAgentId(agentId: number): Promise<Contract[]> {
+        try {
+            const contracts = await this.contractRepository.createQueryBuilder('contract')
+              .leftJoinAndSelect('contract.company', 'company')
+              .leftJoinAndSelect('contract.agent', 'agent')
+              .leftJoinAndSelect('contract.status', 'status')
+              .where('agent.id = :agentId', { agentId })
+              .getMany();
+            
+            return contracts;
+        } catch (error) {
+            console.error('Error in findByAgentId:', error);
+            throw error;
+        }
+    }
 }

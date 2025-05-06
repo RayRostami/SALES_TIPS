@@ -33,7 +33,11 @@ export class ContractController {
         return await this.contractService.findAll();
     }    
     
-    
+    @Get('agent/:agentId')
+    async findAgentContracts(@Param('agentId', ParseIntPipe) agentId: number): Promise<Contract[]> {
+        return await this.contractService.findByAgentId(agentId);
+    }
+
     @Get(':id')
     async findOne(@Param('id', ParseIntPipe) id: number): Promise<Contract> {
         return await this.contractService.findOne(id);
