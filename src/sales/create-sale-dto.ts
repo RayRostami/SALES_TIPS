@@ -50,6 +50,10 @@ export class CreateSaleDto {
   @IsOptional()
   @IsNumber()
   fyc?: number;
+
+  @IsOptional()
+  @IsDate()
+  paymentDate: Date;
 }
 
 
@@ -108,4 +112,12 @@ export class SaleSearchParams {
   @IsOptional()
   @IsString()
   companyId?: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  fromPaymentDate?: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  toPaymentDate?: Date;
 }

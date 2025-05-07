@@ -3,6 +3,7 @@ import { Agent } from '../agents/agent.entity';
 import { Product } from '../products/product.entity';
 import { Company } from '../companies/company.entity';
 import { PayStatus } from 'src/payStatus/payStatus.entity';
+import { DatePickerConfig } from 'antd/es/config-provider/context';
 
 
 @Entity()
@@ -34,6 +35,10 @@ export class Sale {
   @Column({name:'note'})
   note?: string;
 
+  @Column({name:'payment_date'})
+  paymentDate?: Date;
+
+  
   @ManyToOne(() => Product)
   @JoinColumn({ name: 'productId' })
   product: Product;

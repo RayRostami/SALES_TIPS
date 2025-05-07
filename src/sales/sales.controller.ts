@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { SalesService } from './sales.service';
-import { CreateSaleDto, SaleSearchParams,UpdateSaleDto} from './create-sale-dto';
+import { SaleSearchParams,UpdateSaleDto} from './create-sale-dto';
 
 import { Sale } from './sales.entity';
 import { AuthGuard } from 'src/auth/auth.guard';

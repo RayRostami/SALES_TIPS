@@ -17,7 +17,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './auth/auth.guard';
 import { ContractModule } from './contract/contract.module';
 import { Contract } from './contract/contract.entity';
-import { CompanyContractView } from './contract/company-contract-view.entity';
 import { ContractStatus } from './contract/contractStatus.entity';
 
 
@@ -39,7 +38,7 @@ import { ContractStatus } from './contract/contractStatus.entity';
       password: 'Tips2025@!',
       //password: 'Pass12345!',
       database: 'sales_db',
-      entities: [Agent, Sale, Product, Company,PayStatus,Contract, CompanyContractView, ContractStatus],  
+      entities: [Agent, Sale, Product, Company,PayStatus,Contract,  ContractStatus],  
       synchronize: false,
       ssl: false
     }),

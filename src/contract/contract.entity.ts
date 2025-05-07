@@ -8,8 +8,8 @@ export class Contract {
     @PrimaryGeneratedColumn({ name: 'id', type: 'integer' })
     id: number;
 
-    @Column({ name: 'fundservcode', type: 'varchar', length: 100, nullable: true })
-    fundservCode: string;
+    @Column({ name: 'contract_code', type: 'varchar', length: 100, nullable: true })
+    contractCode: string;
 
     @ManyToOne(() => Company, { nullable: false })
     @JoinColumn({ name: 'companyid' })

@@ -47,7 +47,7 @@ export class ContractService {
         
         // Create new contract if no existing one found
         const contract = this.contractRepository.create({
-            fundservCode: createContractDto.fundservCode,
+            contractCode: createContractDto.contractCode,
             company: { id: createContractDto.companyId },
             agent: { id: createContractDto.agentId },
             status: { id: createContractDto.statusId }
@@ -92,8 +92,8 @@ export class ContractService {
         const contract = await this.findOne(id);
 
         // Only update fields that are provided
-        if (updateContractDto.fundservCode !== undefined) {
-            contract.fundservCode = updateContractDto.fundservCode;
+        if (updateContractDto.contractCode !== undefined) {
+            contract.contractCode = updateContractDto.contractCode;
         }
         if (updateContractDto.companyId !== undefined) {
             contract.company = { id: updateContractDto.companyId } as any;

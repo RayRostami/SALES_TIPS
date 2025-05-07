@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 export class CreateContractDto {
     @IsOptional()
     @IsString()
-    fundservCode?: string;
+    contractCode?: string;
 
     @IsNotEmpty()
     @IsNumber()

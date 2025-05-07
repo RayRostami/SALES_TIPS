@@ -20,4 +20,7 @@ export class Company {
   @Column({name:'softwarename'})
   @Optional()
   softwareName?: string;
+
+  @Column({name:'need_first_app'})
+  needFirstApplication: boolean;
 }

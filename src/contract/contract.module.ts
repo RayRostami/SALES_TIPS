@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContractController } from './contract.controller';
 import { ContractService } from './contract.service';
 import { Contract } from './contract.entity';
-import { CompanyContractView } from './company-contract-view.entity';
 import { AuthModule } from '../auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +21,7 @@ import { MailModule } from '../mail/mail.module';
         signOptions: { expiresIn: '60m' },
       }),
     }),
-    TypeOrmModule.forFeature([Contract, CompanyContractView, ContractStatus])
+    TypeOrmModule.forFeature([Contract,  ContractStatus])
   ],
   controllers: [ContractController],
   providers: [ContractService],

@@ -60,7 +60,5 @@ export class ContractController {
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return await this.contractService.remove(id);
-    }
-
-    
+    }    
 }
