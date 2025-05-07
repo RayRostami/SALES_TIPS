@@ -72,6 +72,9 @@ export class SalesController {
   @ApiQuery({ name: 'policyNum', required: false, type: String })
   @ApiQuery({ name: 'produtId', required: false, type: Number })
   @ApiQuery({ name: 'companyId', required: false, type: Number })
+  @ApiQuery({ name: 'fromPaymentDate', required: false, type: String })
+  @ApiQuery({ name: 'toPaymentDate', required: false, type: String })
+  
   async search(
     @Query() searchParams: SaleSearchParams) {  
     return this.salesService.search(searchParams);
