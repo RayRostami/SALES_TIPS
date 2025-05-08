@@ -124,9 +124,8 @@ export class ContractService {
               .leftJoinAndSelect('contract.status', 'status')
               .where('company.id = :companyId', { companyId })
               .andWhere('agent.id = :agentId', { agentId })
-              .getOne();
-            
-            
+              .getOne();            
+           
             return contract;
           } catch (error) {
             console.error('Error in findCompanyContract:', error);
