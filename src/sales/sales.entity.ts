@@ -37,6 +37,8 @@ export class Sale {
   @Column({name:'payment_date'})
   paymentDate?: Date;
 
+  @Column({name:'issue_date'})
+  issueDate?: Date;
   
   @ManyToOne(() => Product)
   @JoinColumn({ name: 'productId' })

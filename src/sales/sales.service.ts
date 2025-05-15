@@ -58,13 +58,14 @@ export class SalesService {
       createSaleDto.coverage,
       createSaleDto.commission,
       createSaleDto.fyc,
-      createSaleDto.paymentDate
+      createSaleDto.paymentDate,
+      createSaleDto.issueDate
     ];
 
     const query = `
       INSERT INTO "sale" 
-      ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage","commission","fyc","payment_date")
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11,$12, $13)
+      ("salesDate", "salesAmount", "productId", "companyId", "agentId", "pay_status_id","client_name","policy_num", "note", "coverage","commission","fyc","payment_date","issue_date")
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11,$12, $13, $14)
     `;
 
     // Using QueryRunner for direct SQL execution
@@ -194,6 +195,16 @@ export class SalesService {
         qb.andWhere('sale.payment_date <= :toDate', { toDate: params.toPaymentDate });
       }
 
+      if (params.fromIssueDate && params.toIssueDate) {
+        qb.andWhere('sale.issue_date BETWEEN :fromDate AND :toDate', {
+          fromDate: params.fromIssueDate,
+          toDate: params.toIssueDate,
+        });
+      } else if (params.fromIssueDate) {
+        qb.andWhere('sale.issue_date >= :fromDate', { fromDate: params.fromIssueDate });
+      } else if (params.toIssueDate) {
+        qb.andWhere('sale.issue_date <= :toDate', { toDate: params.toIssueDate });
+      }
       return qb;
     };
 

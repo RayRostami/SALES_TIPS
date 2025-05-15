@@ -54,6 +54,10 @@ export class CreateSaleDto {
   @IsOptional()
   @IsDate()
   paymentDate: Date;
+
+  @IsOptional()
+  @IsDate()
+  issueDate?: Date;
 }
 
 
@@ -120,4 +124,12 @@ export class SaleSearchParams {
   @IsOptional()
   @Type(() => Date)
   toPaymentDate?: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  fromIssueDate?: Date;
+
+  @IsOptional()
+  @Type(() => Date)
+  toIssueDate?: Date;
 }
