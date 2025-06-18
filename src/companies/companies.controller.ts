@@ -13,6 +13,7 @@ export class CompaniesController {
   }
   @Put(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() company: any) {   
+     
       return this.companiesService.update(id, company);
   }
   @Get()

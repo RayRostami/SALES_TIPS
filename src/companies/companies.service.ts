@@ -54,12 +54,18 @@ export class CompaniesService {
     }
   }
   async update(id: number, companyDto: Company): Promise<Company> {
+    try{
     const company = await this.findById(id);
 
     // Update the agent with new values
     Object.assign(company, companyDto);
 
     return await this.companiesRepository.save(company);
+    }
+    catch(error) {
+      console.log('cu:', error)
+     throw new NotFoundException(`Error in updating company`);
+    }
   }
   async findById(id: number): Promise<Company> {
     const company = await this.companiesRepository.findOne({

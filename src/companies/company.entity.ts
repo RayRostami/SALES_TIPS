@@ -9,7 +9,7 @@ export class Company {
   @Column()
   company: string;
 
-  @Column({name:'wholesaler'})
+  @Column({name:'wholesaler', type:'text', nullable:true})
   @Optional()
   wholeSaler?: string;
 

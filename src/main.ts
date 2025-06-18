@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { GlobalExceptionFilter } from './filters/globalExceptionFilter';
 import { ValidationPipe } from '@nestjs/common';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -34,6 +35,10 @@ async function bootstrap() {
     origin: '*', // Allow requests from React app
     credentials: true,
   });
+  // Increase the limit for JSON payloads
+  app.use(bodyParser.json({ limit: '20mb' }));
+  // Increase the limit for URL-encoded payloads
+  app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
   await app.listen(3000);
 }
 bootstrap();
