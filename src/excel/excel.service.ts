@@ -161,7 +161,7 @@ export class ExcelService {
     }
 
     // Read template file
-    const templatePath = path.join(process.cwd(), 'templates', 'template.xlsx');
+    const templatePath = path.join(process.cwd(), 'templates', 'Template.xlsx');
     const templateWorkbook = new ExcelJS.Workbook();
     await templateWorkbook.xlsx.readFile(templatePath);
     const templateSheet = templateWorkbook.getWorksheet(1); // 1-based index for first sheet
