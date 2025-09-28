@@ -9,7 +9,7 @@ import * as path from 'path';
 @Injectable()
 export class MailService {
   private transporter: nodemailer.Transporter;
-  
+
   constructor(private configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
       host: this.configService.get<string>('EMAIL_HOST'),
@@ -21,20 +21,19 @@ export class MailService {
       },
       tls: {
         rejectUnauthorized: false, // optional, avoid cert issues
-      },      
+      },
       logger: true,
       debug: true,
     });
   }
-  async sendTesting(to:any, from:any, subject:any, text:any){
+  async sendTesting(to: any, from: any, subject: any, text: any) {
     const res = await this.transporter.sendMail({
       from,
       to,
       subject,
       text,
     });
-    console.log('Email sent:', res.response)
-
+    console.log('Email sent:', res.response);
   }
   async sendMail({
     to,
@@ -55,11 +54,11 @@ export class MailService {
         `${template}.hbs`,
       );
       const templateSource = fs.readFileSync(templatePath, 'utf8');
-      
+
       // Compile the template
       const compiledTemplate = handlebars.compile(templateSource);
       const html = compiledTemplate(context);
-      
+
       // Send the email
       const res = await this.transporter.sendMail({
         from: this.configService.get<string>('EMAIL_FROM'),
@@ -67,7 +66,7 @@ export class MailService {
         subject,
         html,
       });
-      console.log('Email sent:', res.response)
+      console.log('Email sent:', res.response);
     } catch (error) {
       console.error('Error sending email:', error);
       throw error;

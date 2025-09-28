@@ -18,10 +18,10 @@ import { AuthGuard } from './auth/auth.guard';
 import { ContractModule } from './contract/contract.module';
 import { Contract } from './contract/contract.entity';
 import { ContractStatus } from './contract/contractStatus.entity';
-
+import { ExcelModule } from './excel/excel.module';
 
 @Module({
-  imports: [   
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Makes config available throughout the app
       envFilePath: '.env', // Specify your .env file path
@@ -29,18 +29,26 @@ import { ContractStatus } from './contract/contractStatus.entity';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '120m' },
-    }),    
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'Tips2025@!',
-      //password: 'Pass12345!',
+     // password: 'Tips2025@!',
+      password: 'Pass12345!',
       database: 'sales_db',
-      entities: [Agent, Sale, Product, Company,PayStatus,Contract,  ContractStatus],  
+      entities: [
+        Agent,
+        Sale,
+        Product,
+        Company,
+        PayStatus,
+        Contract,
+        ContractStatus,
+      ],
       synchronize: false,
-      ssl: false
+      ssl: false,
     }),
 
     AuthModule,
@@ -50,9 +58,10 @@ import { ContractStatus } from './contract/contractStatus.entity';
     CompaniesModule,
     PayStatusModule,
     MailModule,
-    ContractModule
+    ContractModule,
+    ExcelModule,
   ],
-  providers:[AuthGuard],
-  exports:[AuthGuard,JwtModule]
+  providers: [AuthGuard],
+  exports: [AuthGuard, JwtModule],
 })
 export class AppModule {}

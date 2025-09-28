@@ -1,5 +1,11 @@
 // src/agents/dto/agent.dto.ts
-import { IsString, IsEmail, IsBoolean, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsBoolean,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateAgentDto {
   @IsString()
@@ -39,7 +45,7 @@ export class UpdateAgentDto {
   @IsString()
   @IsOptional()
   password?: string;
-  
+
   @IsEmail()
   @IsOptional()
   email?: string;

@@ -3,7 +3,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, SelectQueryBuilder } from 'typeorm';
 import { Sale } from './sales.entity';
-import { CreateSaleDto, UpdateSaleDto, SaleSearchParams } from './create-sale-dto';
+import {
+  CreateSaleDto,
+  UpdateSaleDto,
+  SaleSearchParams,
+} from './create-sale-dto';
 
 import { DataSource } from 'typeorm';
 
@@ -21,7 +25,10 @@ interface SearchParams {
 }
 
 // Parse the sort parameters
-const parseSortParams = (sortField?: string, sortOrder?: string): SortConfig[] => {
+const parseSortParams = (
+  sortField?: string,
+  sortOrder?: string,
+): SortConfig[] => {
   if (!sortField || !sortOrder) {
     return [];
   }
@@ -31,20 +38,19 @@ const parseSortParams = (sortField?: string, sortOrder?: string): SortConfig[] =
 
   return fields.map((field, index) => ({
     field: field.trim(),
-    order: (orders[index]?.trim() || 'DESC') as 'ASC' | 'DESC'
+    order: (orders[index]?.trim() || 'DESC') as 'ASC' | 'DESC',
   }));
 };
-
 
 @Injectable()
 export class SalesService {
   constructor(
     @InjectRepository(Sale)
-    private readonly saleRepository: Repository<Sale>, private dataSource: DataSource
-  ) { }
+    private readonly saleRepository: Repository<Sale>,
+    private dataSource: DataSource,
+  ) {}
 
   async create(createSaleDto: CreateSaleDto): Promise<Sale> {
-
     const values = [
       new Date(createSaleDto.salesDate),
       createSaleDto.salesAmount,
@@ -59,7 +65,7 @@ export class SalesService {
       createSaleDto.commission,
       createSaleDto.fyc,
       createSaleDto.paymentDate,
-      createSaleDto.issueDate
+      createSaleDto.issueDate,
     ];
 
     const query = `
@@ -87,12 +93,7 @@ export class SalesService {
     }
   }
 
-  async findAll({
-    page = 1,
-    pageSize = 10,
-    sortField,
-    sortOrder
-  }) {
+  async findAll({ page = 1, pageSize = 10, sortField, sortOrder }) {
     const skip = (page - 1) * pageSize;
     const order: any = {};
 
@@ -135,14 +136,12 @@ export class SalesService {
 
     return orderBy;
   };
-  
+
   async search(params: SaleSearchParams) {
-  
     // Parse sort configurations
     const sortConfigs = parseSortParams(params.sortField, params.sortOrder);
 
-    const baseQueryBuilder = this.saleRepository
-      .createQueryBuilder('sale');
+    const baseQueryBuilder = this.saleRepository.createQueryBuilder('sale');
 
     // Apply all filters to a function that returns the modified query builder
     const applyFilters = (qb: SelectQueryBuilder<Sale>) => {
@@ -150,7 +149,9 @@ export class SalesService {
         qb.andWhere('sale.agentId = :agentId', { agentId: params.agentId });
       }
       if (params.payStatusId) {
-        qb.andWhere('sale.pay_status_id = :payStatusId', { payStatusId: params.payStatusId });
+        qb.andWhere('sale.pay_status_id = :payStatusId', {
+          payStatusId: params.payStatusId,
+        });
       }
       if (params.productId) {
         const productIds = params.productId.toString().split(',');
@@ -158,20 +159,20 @@ export class SalesService {
           productIds: productIds,
         });
       }
-      if (params.companyId) {        
+      if (params.companyId) {
         const companyIds = params.companyId.toString().split(',');
         qb.andWhere('sale.companyId IN (:...companyIds)', {
           companyIds: companyIds,
         });
       }
       if (params.clientName) {
-        qb.andWhere("LOWER(sale.client_name) LIKE LOWER(:clientName)", {
-          clientName: `%${params.clientName}%`
+        qb.andWhere('LOWER(sale.client_name) LIKE LOWER(:clientName)', {
+          clientName: `%${params.clientName}%`,
         });
       }
       if (params.policyNum) {
-        qb.andWhere("LOWER(sale.policy_num) LIKE LOWER(:policyNum)", {
-          policyNum: `%${params.policyNum}%`
+        qb.andWhere('LOWER(sale.policy_num) LIKE LOWER(:policyNum)', {
+          policyNum: `%${params.policyNum}%`,
         });
       }
       if (params.fromDate && params.toDate) {
@@ -180,7 +181,9 @@ export class SalesService {
           toDate: params.toDate,
         });
       } else if (params.fromDate) {
-        qb.andWhere('sale.salesDate >= :fromDate', { fromDate: params.fromDate });
+        qb.andWhere('sale.salesDate >= :fromDate', {
+          fromDate: params.fromDate,
+        });
       } else if (params.toDate) {
         qb.andWhere('sale.salesDate <= :toDate', { toDate: params.toDate });
       }
@@ -190,9 +193,13 @@ export class SalesService {
           toDate: params.toPaymentDate,
         });
       } else if (params.fromPaymentDate) {
-        qb.andWhere('sale.payment_date >= :fromDate', { fromDate: params.fromPaymentDate });
+        qb.andWhere('sale.payment_date >= :fromDate', {
+          fromDate: params.fromPaymentDate,
+        });
       } else if (params.toPaymentDate) {
-        qb.andWhere('sale.payment_date <= :toDate', { toDate: params.toPaymentDate });
+        qb.andWhere('sale.payment_date <= :toDate', {
+          toDate: params.toPaymentDate,
+        });
       }
 
       if (params.fromIssueDate && params.toIssueDate) {
@@ -201,9 +208,13 @@ export class SalesService {
           toDate: params.toIssueDate,
         });
       } else if (params.fromIssueDate) {
-        qb.andWhere('sale.issue_date >= :fromDate', { fromDate: params.fromIssueDate });
+        qb.andWhere('sale.issue_date >= :fromDate', {
+          fromDate: params.fromIssueDate,
+        });
       } else if (params.toIssueDate) {
-        qb.andWhere('sale.issue_date <= :toDate', { toDate: params.toIssueDate });
+        qb.andWhere('sale.issue_date <= :toDate', {
+          toDate: params.toIssueDate,
+        });
       }
       return qb;
     };
@@ -212,7 +223,8 @@ export class SalesService {
     const filteredQuery = applyFilters(baseQueryBuilder);
 
     // Create data query with relations
-    const dataQuery = filteredQuery.clone()
+    const dataQuery = filteredQuery
+      .clone()
       .leftJoinAndSelect('sale.agent', 'agent')
       .leftJoinAndSelect('sale.product', 'product')
       .leftJoinAndSelect('sale.company', 'company')
@@ -242,29 +254,36 @@ export class SalesService {
     }
 
     // Create total amount query from the filtered base query
-    const totalAmountQuery = filteredQuery.clone()
+    const totalAmountQuery = filteredQuery
+      .clone()
       .andWhere('sale.productId <=4 ')
       .select('SUM(sale.salesAmount)', 'total');
 
-    const totalCommissionQuery = filteredQuery.clone()
+    const totalCommissionQuery = filteredQuery
+      .clone()
       .select('SUM(sale.commission)', 'total');
 
-    const totalFYCQuery = filteredQuery.clone()
+    const totalFYCQuery = filteredQuery
+      .clone()
       .select('SUM(sale.fyc)', 'total');
 
-    const totalDisabilityQuery = filteredQuery.clone()
+    const totalDisabilityQuery = filteredQuery
+      .clone()
       .andWhere('sale.productId = 5 ')
       .select('SUM(sale.salesAmount)', 'total');
 
-    const totalInvesmentQuery = filteredQuery.clone()
+    const totalInvesmentQuery = filteredQuery
+      .clone()
       .andWhere('sale.productId = 6 ')
       .select('SUM(sale.salesAmount)', 'total');
 
-    const totalTravelQuery = filteredQuery.clone()
+    const totalTravelQuery = filteredQuery
+      .clone()
       .andWhere('sale.productId = 7 ')
       .select('SUM(sale.salesAmount)', 'total');
 
-    const totalGroupDentalQuery = filteredQuery.clone()
+    const totalGroupDentalQuery = filteredQuery
+      .clone()
       .andWhere('sale.productId in (8,9) ')
       .select('SUM(sale.salesAmount)', 'total');
 
@@ -311,15 +330,21 @@ export class SalesService {
     // Create relations objects
     const relations = {
       agent: updateSaleDto.agentId ? { id: updateSaleDto.agentId } : undefined,
-      product: updateSaleDto.productId ? { id: updateSaleDto.productId } : undefined,
-      company: updateSaleDto.companyId ? { id: updateSaleDto.companyId } : undefined,
-      payStatus: updateSaleDto.payStatusId ? { id: updateSaleDto.payStatusId } : undefined,
+      product: updateSaleDto.productId
+        ? { id: updateSaleDto.productId }
+        : undefined,
+      company: updateSaleDto.companyId
+        ? { id: updateSaleDto.companyId }
+        : undefined,
+      payStatus: updateSaleDto.payStatusId
+        ? { id: updateSaleDto.payStatusId }
+        : undefined,
     };
 
     // Merge the DTO with relations
     const updatedSale = {
       ...updateSaleDto,
-      ...relations
+      ...relations,
     };
 
     // Remove the ID fields as they're now in the relations

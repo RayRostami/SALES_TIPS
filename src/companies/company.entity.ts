@@ -9,18 +9,18 @@ export class Company {
   @Column()
   company: string;
 
-  @Column({name:'wholesaler', type:'text', nullable:true})
+  @Column({ name: 'wholesaler', type: 'text', nullable: true })
   @Optional()
   wholeSaler?: string;
 
-  @Column({name:'softwarelink'})
+  @Column({ name: 'softwarelink' })
   @Optional()
   softwareLink?: string;
 
-  @Column({name:'softwarename'})
+  @Column({ name: 'softwarename' })
   @Optional()
   softwareName?: string;
 
-  @Column({name:'need_first_app'})
+  @Column({ name: 'need_first_app' })
   needFirstApplication: boolean;
 }

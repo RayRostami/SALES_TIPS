@@ -1,12 +1,16 @@
 // src/agents/agents.service.ts
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, MoreThan, Repository } from 'typeorm';
 import { Agent } from './agent.entity';
 import { CreateAgentDto, UpdateAgentDto } from './agent.dto';
 import { MailService } from 'src/mail/mail.service';
 import { randomUUID } from 'crypto';
-
 
 @Injectable()
 export class AgentsService {
@@ -15,13 +19,12 @@ export class AgentsService {
     private agentRepository: Repository<Agent>,
     private mailService: MailService,
   ) {}
-  
 
   async create(createAgentDto: CreateAgentDto): Promise<Agent> {
     try {
       // First check if email exists
       const existingAgent = await this.agentRepository.findOne({
-        where: { email: createAgentDto.email }
+        where: { email: createAgentDto.email },
       });
 
       if (existingAgent) {
@@ -29,7 +32,7 @@ export class AgentsService {
       }
 
       const existingFanAgent = await this.agentRepository.findOne({
-        where: { fanCode: createAgentDto.fanCode }
+        where: { fanCode: createAgentDto.fanCode },
       });
 
       if (existingFanAgent) {
@@ -39,13 +42,12 @@ export class AgentsService {
       createAgentDto.password = 'temp_pass_2025!@';
 
       // Generate temporary password
-      var tempPassword = createAgentDto.password?.trim();
-      
+      const tempPassword = createAgentDto.password?.trim();
+
       // Generate activation token
       const activationToken = randomUUID().toString();
       const activationExpires = new Date();
       activationExpires.setHours(activationExpires.getHours() + 24); // 24 hours from now
-      
 
       // Hash the temporary password
       // Create new agent instance with the additional fields
@@ -55,20 +57,25 @@ export class AgentsService {
         activationExpires,
         passwordResetRequired: true,
       });
-     
+
       // Save the agent to database
       const savedAgent = await this.agentRepository.save(agent);
-      if(1 === 1) {
+      if (1 === 1) {
         await this.sendActivationEmail(
           savedAgent.email,
           savedAgent.firstName,
           tempPassword,
-          activationToken
+          activationToken,
         );
       }
-      
+
       // Return the agent without sensitive information
-      const { password, activationToken: token, activationExpires: expires, ...result } = savedAgent;
+      const {
+        password,
+        activationToken: token,
+        activationExpires: expires,
+        ...result
+      } = savedAgent;
       return result as Agent;
     } catch (error) {
       if (error instanceof ConflictException) {
@@ -77,11 +84,11 @@ export class AgentsService {
       throw new InternalServerErrorException('Error creating agent');
     }
   }
-  
-  
+
   // Helper method to generate random password
   private generateRandomPassword(length: number): string {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+    const charset =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
     let password = '';
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * charset.length);
@@ -89,16 +96,16 @@ export class AgentsService {
     }
     return password;
   }
-  
+
   // Helper method to send activation email
   private async sendActivationEmail(
     email: string,
     firstName: string,
     tempPassword: string,
-    activationToken: string
+    activationToken: string,
   ): Promise<void> {
     const activationLink = `${process.env.FRONTEND_URL}/activate/${activationToken}`;
-    
+
     await this.mailService.sendMail({
       to: email,
       subject: 'Activate Your TIPS Sales System Account',
@@ -113,43 +120,41 @@ export class AgentsService {
       },
     });
   }
-  
+
   // Add method to activate account
   async activateAccount(token: string, newPassword: string): Promise<Agent> {
     const agent = await this.agentRepository.findOne({
-      select: ['id', 'password', 'activationToken', 'activationExpires'], 
+      select: ['id', 'password', 'activationToken', 'activationExpires'],
       where: {
         activationToken: token,
-        activationExpires: MoreThan(new Date())
+        activationExpires: MoreThan(new Date()),
       },
     });
-    
+
     if (!agent) {
       throw new NotFoundException('Invalid or expired activation token');
     }
-    
-    
-    
+
     // Update agent
     agent.password = newPassword;
     agent.activationToken = null;
     agent.activationExpires = null;
     agent.passwordResetRequired = false;
     agent.isActive = true;
-    
+
     // Save updated agent
     const updatedAgent = await this.agentRepository.save(agent);
-    
+
     // Return without sensitive info
     const { password, ...result } = updatedAgent;
     return result as Agent;
   }
-  
+
   async remove(id: number): Promise<void> {
     try {
       // First check if agent exists
-      const agent = await this.agentRepository.findOne({ 
-        where: { id } 
+      const agent = await this.agentRepository.findOne({
+        where: { id },
       });
 
       if (!agent) {
@@ -172,8 +177,8 @@ export class AgentsService {
   }
 
   async findById(id: number): Promise<Agent> {
-    const agent = await this.agentRepository.findOne({ 
-      where: { id } 
+    const agent = await this.agentRepository.findOne({
+      where: { id },
     });
 
     if (!agent) {
@@ -185,10 +190,10 @@ export class AgentsService {
 
   async update(id: number, updateAgentDto: UpdateAgentDto): Promise<Agent> {
     const agent = await this.findById(id);
-    
+
     // Update the agent with new values
     Object.assign(agent, updateAgentDto);
-    
+
     return await this.agentRepository.save(agent);
   }
   async agentsList({
@@ -209,12 +214,20 @@ export class AgentsService {
     // Add search conditions
     if (search) {
       query.where(
-        new Brackets(qb => {
-          qb.where('LOWER(agent.firstName) LIKE LOWER(:search)', { search: `%${search}%` })
-            .orWhere('LOWER(agent.lastName) LIKE LOWER(:search)', { search: `%${search}%` })
-            .orWhere('LOWER(agent.email) LIKE LOWER(:search)', { search: `%${search}%` })
-            .orWhere('LOWER(agent.fanCode) LIKE LOWER(:search)', { search: `%${search}%` });
-        })
+        new Brackets((qb) => {
+          qb.where('LOWER(agent.firstName) LIKE LOWER(:search)', {
+            search: `%${search}%`,
+          })
+            .orWhere('LOWER(agent.lastName) LIKE LOWER(:search)', {
+              search: `%${search}%`,
+            })
+            .orWhere('LOWER(agent.email) LIKE LOWER(:search)', {
+              search: `%${search}%`,
+            })
+            .orWhere('LOWER(agent.fanCode) LIKE LOWER(:search)', {
+              search: `%${search}%`,
+            });
+        }),
       );
     }
 
@@ -224,45 +237,39 @@ export class AgentsService {
     // Add pagination
     const skip = (page - 1) * size;
     query.skip(skip).take(size);
-  try{
-    // Get results and count
-    const [items, total] = await query.getManyAndCount();
-    return {
-      items,
-      total,
-      page,
-      size,
-      totalPages: Math.ceil(total / size),
-    };
-  }
-  catch(error){
-    console.error('Error fetching agents:', error);
-    throw new InternalServerErrorException('Error fetching agents');
-  }
-
-    
+    try {
+      // Get results and count
+      const [items, total] = await query.getManyAndCount();
+      return {
+        items,
+        total,
+        page,
+        size,
+        totalPages: Math.ceil(total / size),
+      };
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+      throw new InternalServerErrorException('Error fetching agents');
+    }
   }
 
-  async activate(token:string, newPassword:string): Promise<Agent> {
-    const agent = await this.agentRepository.findOne({ 
-      where: { activationToken: token  } 
-    }); 
+  async activate(token: string, newPassword: string): Promise<Agent> {
+    const agent = await this.agentRepository.findOne({
+      where: { activationToken: token },
+    });
     if (!agent) {
       throw new NotFoundException(`Account not found.`);
     }
-    
+
     agent.isActive = true;
     agent.password = newPassword;
     agent.passwordResetRequired = false;
     agent.activationToken = null;
     agent.activationExpires = null;
-    try
-    {
+    try {
       return await this.agentRepository.save(agent);
-    }
-    catch(error)
-    {
-      console.log('error:',error)
+    } catch (error) {
+      console.log('error:', error);
       throw new InternalServerErrorException('Error activating account');
     }
   }

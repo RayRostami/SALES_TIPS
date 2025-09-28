@@ -8,21 +8,24 @@ import { MailModule } from '../mail/mail.module';
 import { AuthGuard } from './auth.guard';
 import { ConfigService } from '@nestjs/config';
 
-
 @Module({
   imports: [
-   JwtModule.registerAsync({
-       inject: [ConfigService],
-       useFactory: (configService: ConfigService) => ({
-         secret: configService.get<string>('JWT_SECRET'),
-         signOptions: { expiresIn: '120m' },
-       }),
-     }),
-    TypeOrmModule.forFeature([Agent]),MailModule,
-    JwtModule.register({ secret: 'secretKey', signOptions: { expiresIn: '1d' } }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '120m' },
+      }),
+    }),
+    TypeOrmModule.forFeature([Agent]),
+    MailModule,
+    JwtModule.register({
+      secret: 'secretKey',
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthGuard,AuthService],
-  exports: [AuthGuard,AuthService,AuthModule],
+  providers: [AuthGuard, AuthService],
+  exports: [AuthGuard, AuthService, AuthModule],
 })
 export class AuthModule {}

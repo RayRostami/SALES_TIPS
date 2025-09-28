@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from './company.entity';
@@ -8,22 +13,23 @@ export class CompaniesService {
   constructor(
     @InjectRepository(Company)
     private companiesRepository: Repository<Company>,
-  ) { }
+  ) {}
 
   async create(company: Partial<Company>) {
     try {
       const existingAgent = await this.companiesRepository.findOne({
-        where: { company: company.company }
+        where: { company: company.company },
       });
 
       if (existingAgent) {
-        throw new ConflictException(`Company: ${company.company} already exists.`);
-      }      
+        throw new ConflictException(
+          `Company: ${company.company} already exists.`,
+        );
+      }
       const newCompany = this.companiesRepository.create(company);
       const savedCompany = await this.companiesRepository.save(newCompany);
       return savedCompany;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error creating company:', error);
       throw new Error('Error creating company');
     }
@@ -36,7 +42,7 @@ export class CompaniesService {
     try {
       // First check if agent exists
       const agent = await this.companiesRepository.findOne({
-        where: { id }
+        where: { id },
       });
 
       if (!agent) {
@@ -54,22 +60,21 @@ export class CompaniesService {
     }
   }
   async update(id: number, companyDto: Company): Promise<Company> {
-    try{
-    const company = await this.findById(id);
+    try {
+      const company = await this.findById(id);
 
-    // Update the agent with new values
-    Object.assign(company, companyDto);
+      // Update the agent with new values
+      Object.assign(company, companyDto);
 
-    return await this.companiesRepository.save(company);
-    }
-    catch(error) {
-      console.log('cu:', error)
-     throw new NotFoundException(`Error in updating company`);
+      return await this.companiesRepository.save(company);
+    } catch (error) {
+      console.log('cu:', error);
+      throw new NotFoundException(`Error in updating company`);
     }
   }
   async findById(id: number): Promise<Company> {
     const company = await this.companiesRepository.findOne({
-      where: { id }
+      where: { id },
     });
 
     if (!company) {

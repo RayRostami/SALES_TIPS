@@ -7,14 +7,13 @@ export class MailController {
   constructor(private readonly mailService: MailService) {}
 
   @Get('test')
-  async sendTestEmail(   
-  ) {
+  async sendTestEmail() {
     try {
       await this.mailService.sendTesting(
         'rostami.r76@gmail.com',
         'tipsadvisors@tipservices.ca',
-               'Test Email',
-         'This is a test email from the application.',
+        'Test Email',
+        'This is a test email from the application.',
       );
       console.log('Test email sent successfully');
       return {

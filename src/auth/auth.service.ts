@@ -1,5 +1,9 @@
 // src/auth/auth.service.ts
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, MoreThan, Repository } from 'typeorm';
@@ -7,29 +11,34 @@ import { Agent } from '../agents/agent.entity';
 import { MailService } from 'src/mail/mail.service';
 import * as crypto from 'crypto';
 
-
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Agent)
     private agentsRepository: Repository<Agent>,
-    private jwtService: JwtService,    
+    private jwtService: JwtService,
     private mailService: MailService,
   ) {}
-  
-  async validateUser(email: string, pass: string): Promise<any> {
-    try {  
 
+  async validateUser(email: string, pass: string): Promise<any> {
+    try {
       const user = await this.agentsRepository.findOne({
-        where: { email: ILike(`${email}`)},
-        select: ['id', 'email', 'password', 'firstName', 'lastName', 'isActive', 'role'] // Include all needed fields
-      });      
+        where: { email: ILike(`${email}`) },
+        select: [
+          'id',
+          'email',
+          'password',
+          'firstName',
+          'lastName',
+          'isActive',
+          'role',
+        ], // Include all needed fields
+      });
 
       if (!user) {
         throw new UnauthorizedException('Email or password is incorrect.');
       }
-     
-      
+
       if (pass !== user.password) {
         throw new UnauthorizedException('Email or password is incorrect');
       }
@@ -39,8 +48,7 @@ export class AuthService {
 
       const { password, ...result } = user;
       return result;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Login error:', error);
       throw new UnauthorizedException(error.message || 'Invalid credentials');
     }
@@ -49,14 +57,14 @@ export class AuthService {
   async login(user: any) {
     try {
       const payload = { email: user.email, sub: user.id };
-      return { 
-        access_token: this.jwtService.sign(payload, { expiresIn: '2h'}), 
+      return {
+        access_token: this.jwtService.sign(payload, { expiresIn: '2h' }),
         user: {
-          firstName: user?.firstName, 
-          lastName: user?.lastName, 
-          id: user?.id, 
-          role: user?.role
-        } 
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+          id: user?.id,
+          role: user?.role,
+        },
       };
     } catch (error) {
       console.error('Login error:', error);
@@ -68,7 +76,9 @@ export class AuthService {
     const user = await this.agentsRepository.findOne({ where: { email } });
     if (!user) {
       // Don't reveal if email exists or not
-      return { message: 'If the email exists, reset instructions will be sent' };
+      return {
+        message: 'If the email exists, reset instructions will be sent',
+      };
     }
 
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -80,7 +90,7 @@ export class AuthService {
     await this.agentsRepository.save(user);
 
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    
+
     await this.mailService.sendMail({
       to: email,
       subject: 'Password Reset Request',

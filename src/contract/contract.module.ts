@@ -21,7 +21,7 @@ import { MailModule } from '../mail/mail.module';
         signOptions: { expiresIn: '60m' },
       }),
     }),
-    TypeOrmModule.forFeature([Contract,  ContractStatus])
+    TypeOrmModule.forFeature([Contract, ContractStatus]),
   ],
   controllers: [ContractController],
   providers: [ContractService],

@@ -1,5 +1,11 @@
 // src/agents/agent.entity.ts
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 @Entity('agent')
@@ -21,25 +27,35 @@ export class Agent {
 
   @Column({ default: false })
   isActive: boolean;
-  
+
   @Column({ select: true })
   password: string;
-  
-  @Column({name:'activationtoken', type: 'varchar', nullable: true, select: false })
+
+  @Column({
+    name: 'activationtoken',
+    type: 'varchar',
+    nullable: true,
+    select: false,
+  })
   activationToken: string | null;
 
-  @Column({name:'activationexpires', type: 'timestamp', nullable: true, select: false })
+  @Column({
+    name: 'activationexpires',
+    type: 'timestamp',
+    nullable: true,
+    select: false,
+  })
   activationExpires: Date | null;
-  
-  @Column({name:'passwordresetrequired', default: false })
+
+  @Column({ name: 'passwordresetrequired', default: false })
   passwordResetRequired: boolean;
-  
-  @Column({default:1})
-  role: number;  
 
-  @Column({name:'phone'})
-  phone?: string;  
+  @Column({ default: 1 })
+  role: number;
 
-  @Column({name:'address'})
-  address?: string;  
+  @Column({ name: 'phone' })
+  phone?: string;
+
+  @Column({ name: 'address' })
+  address?: string;
 }

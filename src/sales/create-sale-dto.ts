@@ -1,5 +1,12 @@
 // src/sales/dto/create-sale.dto.ts
-import { IsNotEmpty, IsNumber, IsDate, IsOptional, IsString, isNotEmpty } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsDate,
+  IsOptional,
+  IsString,
+  isNotEmpty,
+} from 'class-validator';
 
 export class CreateSaleDto {
   @IsNotEmpty()
@@ -38,7 +45,7 @@ export class CreateSaleDto {
   @IsNotEmpty()
   @IsString()
   policyNum: string;
-  
+
   @IsString()
   @IsOptional()
   note?: string;
@@ -60,7 +67,6 @@ export class CreateSaleDto {
   issueDate?: Date;
 }
 
-
 import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 export class UpdateSaleDto extends PartialType(CreateSaleDto) {}
@@ -68,12 +74,12 @@ export class SaleSearchParams {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  page?: number ;
+  page?: number;
 
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  pageSize?: number ;
+  pageSize?: number;
 
   @IsOptional()
   @IsString()
@@ -81,7 +87,7 @@ export class SaleSearchParams {
 
   @IsOptional()
   @IsString()
-  sortOrder?: string ;
+  sortOrder?: string;
 
   @IsOptional()
   @IsNumber()

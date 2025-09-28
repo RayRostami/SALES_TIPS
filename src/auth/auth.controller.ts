@@ -10,14 +10,14 @@ export class AuthController {
   @Post('login')
   @ApiResponse({ status: 200, description: 'Successfully logged in' })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
-  async login(@Body() body: { email: string; password: string }) {    
+  async login(@Body() body: { email: string; password: string }) {
     const user = await this.authService.validateUser(body.email, body.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
     return this.authService.login(user);
   }
-  
+
   @Post('forgot-password')
   async forgotPassword(@Body('email') email: string) {
     return this.authService.sendPasswordResetEmail(email);

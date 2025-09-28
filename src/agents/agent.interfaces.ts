@@ -1,4 +1,4 @@
-import { Agent } from "./agent.entity";
+import { Agent } from './agent.entity';
 
 export interface PaginatedAgents {
   items: Agent[];
@@ -7,11 +7,11 @@ export interface PaginatedAgents {
   pageSize: number;
   totalPages: number;
 }
-  
-  export interface QueryParams {
-    skip: number;
-    take: number;
-    orderBy?: Record<string, 'asc' | 'desc'>;
-  }
 
-  export default PaginatedAgents;
+export interface QueryParams {
+  skip: number;
+  take: number;
+  orderBy?: Record<string, 'asc' | 'desc'>;
+}
+
+export default PaginatedAgents;

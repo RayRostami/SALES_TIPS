@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Delete, Param, ParseIntPipe, HttpCode, HttpStatus, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Param,
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ProductsService } from './product.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 
@@ -6,13 +18,13 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @UseGuards(AuthGuard)
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
-@Post()
+  @Post()
   create(@Body() product: any) {
     return this.productsService.create(product);
   }
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() product: any) {    
-      return this.productsService.update(id, product);
+  update(@Param('id', ParseIntPipe) id: number, @Body() product: any) {
+    return this.productsService.update(id, product);
   }
   @Get()
   findAll() {
@@ -20,11 +32,11 @@ export class ProductsController {
   }
   @Get(':id')
   findById(@Param('id', new ParseIntPipe()) id: number) {
-      return this.productsService.findById(id);
+    return this.productsService.findById(id);
   }
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', new ParseIntPipe()) id: number): Promise<void> {    
-      await this.productsService.remove(id);
+  async remove(@Param('id', new ParseIntPipe()) id: number): Promise<void> {
+    await this.productsService.remove(id);
   }
 }
