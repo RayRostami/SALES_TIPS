@@ -35,8 +35,8 @@ import { ExcelModule } from './excel/excel.module';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-     // password: 'Tips2025@!',
-      password: 'Pass12345!',
+      password: 'Tips2025@!',
+      //password: 'Pass12345!',
       database: 'sales_db',
       entities: [
         Agent,
