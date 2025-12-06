@@ -19,6 +19,11 @@ import { ContractModule } from './contract/contract.module';
 import { Contract } from './contract/contract.entity';
 import { ContractStatus } from './contract/contractStatus.entity';
 import { ExcelModule } from './excel/excel.module';
+import { MaterialsModule } from './materials/material.module';
+import { Material } from './materials/material.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/order.entity';
+import { OrderLine } from './orders/order-line.entity';
 
 @Module({
   imports: [
@@ -36,7 +41,7 @@ import { ExcelModule } from './excel/excel.module';
       port: 5432,
       username: 'postgres',
       password: 'Tips2025@!',
-      //password: 'Pass12345!',
+     
       database: 'sales_db',
       entities: [
         Agent,
@@ -46,6 +51,9 @@ import { ExcelModule } from './excel/excel.module';
         PayStatus,
         Contract,
         ContractStatus,
+        Material,
+        Order,
+        OrderLine,
       ],
       synchronize: false,
       ssl: false,
@@ -60,6 +68,8 @@ import { ExcelModule } from './excel/excel.module';
     MailModule,
     ContractModule,
     ExcelModule,
+    MaterialsModule,
+    OrdersModule,
   ],
   providers: [AuthGuard],
   exports: [AuthGuard, JwtModule],

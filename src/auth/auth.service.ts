@@ -32,6 +32,7 @@ export class AuthService {
           'lastName',
           'isActive',
           'role',
+          'phone',
         ], // Include all needed fields
       });
 
@@ -56,7 +57,7 @@ export class AuthService {
 
   async login(user: any) {
     try {
-      const payload = { email: user.email, sub: user.id };
+      const payload = { email: user.email, sub: user.id, role: user.role };
       return {
         access_token: this.jwtService.sign(payload, { expiresIn: '2h' }),
         user: {
@@ -64,6 +65,8 @@ export class AuthService {
           lastName: user?.lastName,
           id: user?.id,
           role: user?.role,
+          email: user?.email,
+          phone: user?.phone,
         },
       };
     } catch (error) {
