@@ -58,8 +58,9 @@ export class TicketsService {
     }
 
     // If assignedTo is provided, validate it's a role 3 or 4 agent
+    let assignee = null;
     if (createTicketDto.assignedTo) {
-      const assignee = await this.agentRepository.findOne({
+      assignee = await this.agentRepository.findOne({
         where: { id: createTicketDto.assignedTo },
       });
       if (!assignee || (assignee.role !== 3 && assignee.role !== 4)) {
@@ -75,7 +76,63 @@ export class TicketsService {
       statusId: 1, // Default to "Open" status
     });
 
-    return await this.ticketRepository.save(ticket);
+    const savedTicket = await this.ticketRepository.save(ticket);
+
+    // Send email notification to all admins and supervisors
+    try {
+      // Get all admins (role 3) and supervisors (role 4)
+      const adminsAndSupervisors = await this.agentRepository.find({
+        where: [
+          { role: 3 },
+          { role: 4 },
+        ],
+      });
+
+      // Get company name if available
+      let companyName = 'N/A';
+      if (createTicketDto.companyId) {
+        const company = await this.agentRepository
+          .createQueryBuilder('agent')
+          .leftJoinAndSelect('agent.company', 'company')
+          .where('company.id = :companyId', { companyId: createTicketDto.companyId })
+          .getOne();
+        if (company && company.company) {
+          companyName = company.company.company;
+        }
+      }
+
+      // Send email to each admin/supervisor
+      for (const admin of adminsAndSupervisors) {
+        if (admin.email) {
+          await this.mailService.sendMail({
+            to: admin.email,
+            subject: `🎫 New Ticket #${savedTicket.id} - ${ticketType.name}`,
+            template: 'new-ticket-notification',
+            context: {
+              adminName: `${admin.firstName} ${admin.lastName}`,
+              agentName: `${agent.firstName} ${agent.lastName}`,
+              ticketId: savedTicket.id,
+              ticketTitle: savedTicket.title,
+              ticketDescription: savedTicket.description,
+              ticketType: ticketType.name,
+              priority: savedTicket.priority || 'medium',
+              priorityUpper: (savedTicket.priority || 'medium').toUpperCase(),
+              companyName: companyName,
+              assignedTo: assignee ? `${assignee.firstName} ${assignee.lastName}` : null,
+              createdDate: new Date(savedTicket.createdAt).toLocaleString(),
+              ticketLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/tickets/${savedTicket.id}`,
+              currentYear: new Date().getFullYear(),
+            },
+          });
+        }
+      }
+      console.log(`New ticket notification emails sent to ${adminsAndSupervisors.length} admins/supervisors`);
+    } catch (error) {
+      console.error('Error sending new ticket notification emails:', error);
+      // Don't throw error - we still want the ticket creation to succeed even if email fails
+    }
+
+    return savedTicket;
   }
 
   // Get all tickets with filtering and pagination
