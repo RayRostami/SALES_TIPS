@@ -12,6 +12,7 @@ import { TicketStatus } from './ticket-status.entity';
 import { TicketAttachment } from './ticket-attachment.entity';
 import { TicketComment } from './ticket-comment.entity';
 import { Agent } from '../agents/agent.entity';
+import { Company } from '../companies/company.entity';
 import { MailService } from '../mail/mail.service';
 import {
   CreateTicketDto,
@@ -36,6 +37,8 @@ export class TicketsService {
     private ticketCommentRepository: Repository<TicketComment>,
     @InjectRepository(Agent)
     private agentRepository: Repository<Agent>,
+    @InjectRepository(Company)
+    private companyRepository: Repository<Company>,
     private mailService: MailService,
   ) {}
 
@@ -58,7 +61,7 @@ export class TicketsService {
     }
 
     // If assignedTo is provided, validate it's a role 3 or 4 agent
-    let assignee = null;
+    let assignee: Agent | null = null;
     if (createTicketDto.assignedTo) {
       assignee = await this.agentRepository.findOne({
         where: { id: createTicketDto.assignedTo },
@@ -91,13 +94,11 @@ export class TicketsService {
       // Get company name if available
       let companyName = 'N/A';
       if (createTicketDto.companyId) {
-        const company = await this.agentRepository
-          .createQueryBuilder('agent')
-          .leftJoinAndSelect('agent.company', 'company')
-          .where('company.id = :companyId', { companyId: createTicketDto.companyId })
-          .getOne();
-        if (company && company.company) {
-          companyName = company.company.company;
+        const company = await this.companyRepository.findOne({
+          where: { id: createTicketDto.companyId },
+        });
+        if (company) {
+          companyName = company.company;
         }
       }
 
