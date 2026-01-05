@@ -1,0 +1,5 @@
+# Uploads Directory
+
+This directory contains uploaded files for tickets.
+
+Files are stored with the naming pattern: `ticket-{timestamp}-{random}.{ext}`

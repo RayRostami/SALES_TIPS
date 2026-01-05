@@ -64,6 +64,7 @@ export class OrdersService {
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.orderLines', 'orderLines')
       .leftJoinAndSelect('orderLines.material', 'material')
+      .leftJoinAndSelect('orderLines.unit', 'unit')
       .leftJoinAndSelect('order.agent', 'agent');
 
     let hasWhere = false;
@@ -128,6 +129,7 @@ export class OrdersService {
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.orderLines', 'orderLines')
       .leftJoinAndSelect('orderLines.material', 'material')
+      .leftJoinAndSelect('orderLines.unit', 'unit')
       .leftJoinAndSelect('order.agent', 'agent')
       .where('order.orderId = :id', { id })
       .getOne();

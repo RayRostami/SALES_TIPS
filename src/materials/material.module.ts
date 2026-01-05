@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Material } from './material.entity';
+import { MaterialCategory } from './material-category.entity';
+import { Unit } from './unit.entity';
+import { MaterialUnit } from './material-unit.entity';
 import { MaterialsService } from './material.service';
 import { MaterialsController } from './material.controller';
 import { AuthModule } from '../auth/auth.module';
@@ -17,7 +20,7 @@ import { ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '120m' },
       }),
     }),
-    TypeOrmModule.forFeature([Material]),
+    TypeOrmModule.forFeature([Material, MaterialCategory, Unit, MaterialUnit]),
   ],
   providers: [MaterialsService],
   controllers: [MaterialsController],

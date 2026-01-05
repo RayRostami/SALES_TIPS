@@ -21,9 +21,18 @@ import { ContractStatus } from './contract/contractStatus.entity';
 import { ExcelModule } from './excel/excel.module';
 import { MaterialsModule } from './materials/material.module';
 import { Material } from './materials/material.entity';
+import { MaterialCategory } from './materials/material-category.entity';
+import { Unit } from './materials/unit.entity';
+import { MaterialUnit } from './materials/material-unit.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/order.entity';
 import { OrderLine } from './orders/order-line.entity';
+import { TicketsModule } from './tickets/tickets.module';
+import { Ticket } from './tickets/ticket.entity';
+import { TicketType } from './tickets/ticket-type.entity';
+import { TicketStatus } from './tickets/ticket-status.entity';
+import { TicketAttachment } from './tickets/ticket-attachment.entity';
+import { TicketComment } from './tickets/ticket-comment.entity';
 
 @Module({
   imports: [
@@ -40,8 +49,8 @@ import { OrderLine } from './orders/order-line.entity';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'Tips2025@!',
-     
+      //password: 'Tips2025@!',
+      password: 'Pass12345!',
       database: 'sales_db',
       entities: [
         Agent,
@@ -52,8 +61,16 @@ import { OrderLine } from './orders/order-line.entity';
         Contract,
         ContractStatus,
         Material,
+        MaterialCategory,
+        Unit,
+        MaterialUnit,
         Order,
         OrderLine,
+        Ticket,
+        TicketType,
+        TicketStatus,
+        TicketAttachment,
+        TicketComment,
       ],
       synchronize: false,
       ssl: false,
@@ -70,6 +87,7 @@ import { OrderLine } from './orders/order-line.entity';
     ExcelModule,
     MaterialsModule,
     OrdersModule,
+    TicketsModule,
   ],
   providers: [AuthGuard],
   exports: [AuthGuard, JwtModule],

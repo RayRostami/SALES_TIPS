@@ -1,6 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order.entity';
 import { Material } from '../materials/material.entity';
+import { Unit } from '../materials/unit.entity';
 
 @Entity('order_lines')
 export class OrderLine {
@@ -20,6 +21,13 @@ export class OrderLine {
   @ManyToOne(() => Material, { nullable: true })
   @JoinColumn({ name: 'material_id' })
   material: Material;
+
+  @Column({ name: 'unit_id', type: 'integer', nullable: true })
+  unitId: number;
+
+  @ManyToOne(() => Unit, { eager: true, nullable: true })
+  @JoinColumn({ name: 'unit_id' })
+  unit: Unit;
 
   @Column({ name: 'order_qty', type: 'integer', nullable: true })
   orderQty: number;
